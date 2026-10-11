@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Run the KinetIQ backend (port 8000) and frontend (port 3000) together.
+# Run the KinetIQ backend (port 8001 by default) and frontend (port 3000) together.
 # Ctrl+C stops both. If either one exits, the other is stopped too.
+# Override the backend port with: BACKEND_PORT=9000 ./start.sh
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_PORT=8000  # frontend/src/App.jsx calls http://localhost:8000
+BACKEND_PORT="${BACKEND_PORT:-8001}"
 UVICORN="$ROOT/backend/venv/bin/uvicorn"
 
 if [[ ! -x "$UVICORN" ]]; then
@@ -48,7 +49,8 @@ trap cleanup EXIT
 "$UVICORN" main:app --app-dir "$ROOT/backend" --port "$BACKEND_PORT" &
 BACKEND_PID=$!
 
-(cd "$ROOT/frontend" && exec npm run dev) &
+# The frontend reads VITE_API_URL to find the backend (see frontend/src/App.jsx).
+(cd "$ROOT/frontend" && VITE_API_URL="http://localhost:$BACKEND_PORT" exec npm run dev) &
 FRONTEND_PID=$!
 
 echo "Backend:  http://localhost:$BACKEND_PORT  (pid $BACKEND_PID)"

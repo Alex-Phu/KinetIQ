@@ -3,6 +3,8 @@ import VideoUploader from "./components/VideoUploader";
 import AnalysisResults from "./components/AnalysisResults";
 import "./index.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 export default function App() {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function App() {
     formData.append("activity", activity);
 
     try {
-      const res = await fetch("http://localhost:8000/analyze", {
+      const res = await fetch(`${API_URL}/analyze`, {
         method: "POST",
         body: formData,
       });
