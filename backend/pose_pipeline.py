@@ -7,6 +7,10 @@ to extract body keypoints from each video frame.
 import cv2
 import urllib.request
 import os
+import shutil
+import ssl
+
+import certifi
 from typing import List, Dict, Any
 
 import mediapipe as mp
@@ -32,15 +36,21 @@ LANDMARK_NAMES = {
 
 TRACKED_INDICES = set(LANDMARK_NAMES.keys())
 
-MODEL_PATH = "pose_landmarker_heavy.task"
+# Resolve relative to this file so the server works from any working directory.
+MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pose_landmarker_heavy.task")
 MODEL_URL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task"
 
 
 def download_model():
     """Download the pose landmarker model file if not already present."""
     if not os.path.exists(MODEL_PATH):
-        print("Downloading MediaPipe pose model (~5MB)...")
-        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+        print("Downloading MediaPipe pose model (~30MB)...")
+        # Use certifi's CA bundle: the python.org build ships without one,
+        # which otherwise fails with CERTIFICATE_VERIFY_FAILED.
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        with urllib.request.urlopen(MODEL_URL, context=ssl_context) as response, \
+                open(MODEL_PATH, "wb") as out_file:
+            shutil.copyfileobj(response, out_file)
         print("Model downloaded.")
 
 

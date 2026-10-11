@@ -1,13 +1,19 @@
 # Python
 backend/venv/
+venv*/
 backend/__pycache__/
+__pycache__/
 backend/uploads/
 *.pyc
 
 # Node
 frontend/node_modules/
+frontend/dist/
 
 # Mac
 .DS_Store
-venv*/
-frontend/dist/
+
+# Local media and stray files (kept on disk, not in the repo)
+Videos/
+Videos 2.zip
+/package-lock.json
