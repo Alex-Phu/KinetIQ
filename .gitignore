@@ -1,7 +1,6 @@
 # Python
 backend/venv/
 backend/__pycache__/
-backend/*.task
 backend/uploads/
 *.pyc
 
@@ -10,3 +9,5 @@ frontend/node_modules/
 
 # Mac
 .DS_Store
+venv*/
+frontend/dist/
